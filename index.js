@@ -1,29 +1,53 @@
-import http from 'http';
+import express from 'express';
 import chalk from 'chalk';
+import coursesArr, { printCoursesToConsole } from './courses.js';
+import studentsArr from './students.js';
+
+const app = express();
 const port = process.env.PORT
     || 3000;
-//Array of courses
-const coursesArr = [
-    { id: '1', name: 'cooking', description: 'learn how to cook' },
-    { id: '2', name: 'baking', description: 'learn how to bake a cake' },
-    { id: '3', name: 'Flute', description: 'Learning how to play the flute' },
-    { id: '4', name: 'Sewing', description: 'Learning to sew and draw patterns' }
-];
-//Converting the array to a string
-let output = '';
-coursesArr.forEach(course => {
-    output += `${course.id}: ${course.name} - ${course.description}\n`;
-});
-//build server
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end(output);
-});
-//Waiting to be read from the browser
-server.listen(port, () => {
-    console.log(chalk.yellow(`Server is running at http://localhost:${port}/`));
-    coursesArr.forEach(course => {
-        console.log(chalk.blue.bgYellow(`${course.id}:`) + chalk.green(`${course.name} - ${course.description}`));
+
+// פונקציית עזר מרכזית לשליחת JSON
+function sendJson(res, data, statusCode = 200) {
+    res.status(statusCode).json(data);
+}
+
+// Route 1: שורש — מידע כללי על השרת
+app.get('/', (req, res) => {
+    sendJson(res, {
+        status: 'running',
+        description: 'Server for managing courses and students. Supports routes: /courses, /students'
     });
-})
+});
+
+// Route 2: רשימת קורסים
+app.get('/courses', (req, res) => {
+    sendJson(res, coursesArr);
+});
+
+// Route 3: רשימת סטודנטים
+app.get('/students', (req, res) => {
+    sendJson(res, studentsArr);
+});
+
+// 404 — תופס כל בקשה שלא נמצא לה Route מתאים
+app.use((req, res) => {
+    sendJson(res, {
+        error: 'Not Found',
+        message: `No route found for ${req.method} ${req.url}`
+    }, 404);
+});
+
+// Error handler — תופס שגיאות בלתי צפויות ומחזיר JSON במקום HTML
+app.use((err, req, res, next) => {
+    sendJson(res, {
+        error: 'Internal Server Error',
+        message: err.message
+    }, 500);
+});
+
+// הרמת השרת
+app.listen(port, () => {
+    console.log(chalk.yellow(`Server is running at http://localhost:${port}/`));
+    printCoursesToConsole();
+});
