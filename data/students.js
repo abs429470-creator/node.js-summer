@@ -1,15 +1,3 @@
-// פונקציה לבדיקת תוקף תעודת זהות ישראלית (ספרת ביקורת)
-export function isValidIsraeliId(id) {
-    const digits = String(id).padStart(9, '0').split('').map(Number);
-    let sum = 0;
-    for (let i = 0; i < 9; i++) {
-        let val = digits[i] * ((i % 2) + 1);
-        if (val > 9) val = Math.floor(val / 10) + (val % 10);
-        sum += val;
-    }
-    return sum % 10 === 0;
-}
-
 const studentsArr = [
     { id: '100000009', fullName: 'Abraham Cohen',   birthDate: '2005-03-12', courses: ['1', '2', '10'] },
     { id: '100000017', fullName: 'Isaac Levy',      birthDate: '2006-07-25', courses: ['3', '9'] },
