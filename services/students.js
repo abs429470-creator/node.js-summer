@@ -1,6 +1,6 @@
 import studentsArr from '../data/students.js';
 
-// בודק תוקף תעודת זהות ישראלית לפי אלגוריתם ספרת ביקורת
+// Validates an Israeli ID number using the check-digit algorithm
 export function isValidIsraeliId(id) {
     const digits = String(id).padStart(9, '0').split('').map(Number);
     let sum = 0;
@@ -12,19 +12,19 @@ export function isValidIsraeliId(id) {
     return sum % 10 === 0;
 }
 
-// מחזיר את כל הסטודנטים
+// Returns all students
 export function getAllStudents() {
     return studentsArr;
 }
 
-// מחזיר סטודנט בודד לפי ID, או שגיאה
+// Returns a single student by ID, or an error object
 export function getStudent(id) {
     const student = studentsArr.find(s => s.id === id);
     if (!student) return { error: 'Student not found', id };
     return student;
 }
 
-// יוצר סטודנט חדש. fullName, birthDate, id — כולם חובה. ת"ז חייבת להיות תקינה וייחודית.
+// Creates a new student. fullName, birthDate, and id are all required. ID must be a valid and unique Israeli ID number.
 export function createStudent({ fullName, birthDate, id }) {
     if (!fullName)  return { error: 'fullName is required' };
     if (!birthDate) return { error: 'birthDate is required' };
@@ -39,7 +39,7 @@ export function createStudent({ fullName, birthDate, id }) {
     return student;
 }
 
-// מעדכן סטודנט קיים — החלפה מלאה (PUT). כל השדות חובה.
+// Fully replaces an existing student (PUT). All fields are required.
 export function updateStudent(currentId, { fullName, birthDate, id: newId }) {
     const student = studentsArr.find(s => s.id === currentId);
     if (!student) return { error: 'Student not found', id: currentId };
@@ -58,22 +58,22 @@ export function updateStudent(currentId, { fullName, birthDate, id: newId }) {
     return student;
 }
 
-// עדכון חלקי של סטודנט (PATCH) — רק שדות שנשלחו מתעדכנים
+// Partially updates a student (PATCH) — only fields that were sent get updated
 export function patchStudent(id, updates) {
     const student = studentsArr.find(s => s.id === id);
     if (!student) return { error: 'Student not found', id };
 
-    if (updates.fullName !== undefined) {
+    if (updates.fullName !== undefined && updates.fullName !== null) {
         if (updates.fullName.trim() === '') return { error: 'fullName cannot be empty' };
         student.fullName = updates.fullName;
     }
 
-    if (updates.birthDate !== undefined) {
+    if (updates.birthDate !== undefined && updates.birthDate !== null) {
         if (updates.birthDate.trim() === '') return { error: 'birthDate cannot be empty' };
         student.birthDate = updates.birthDate;
     }
 
-    if (updates.id !== undefined) {
+    if (updates.id !== undefined && updates.id !== null) {
         if (!isValidIsraeliId(updates.id)) return { error: 'Invalid Israeli ID number' };
         if (updates.id !== id && studentsArr.some(s => s.id === updates.id)) {
             return { error: 'Student ID already exists', id: updates.id };
@@ -84,7 +84,7 @@ export function patchStudent(id, updates) {
     return student;
 }
 
-// מוחק סטודנט לפי ID
+// Deletes a student by ID
 export function deleteStudent(id) {
     const index = studentsArr.findIndex(s => s.id === id);
     if (index === -1) return { error: 'Student not found', id };

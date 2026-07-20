@@ -3,15 +3,20 @@ import chalk from 'chalk';
 import coursesRouter from './routes/courses.js';
 import studentsRouter from './routes/students.js';
 import enrollmentRouter from './routes/enrollment.js';
+import checkAuthKey from './middleware/auth.js';
 import { printCoursesToConsole } from './data/courses.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware: פענוח גוף בקשות JSON
+// Middleware: Parse incoming JSON request bodies
 app.use(express.json());
 
-// Route: מידע כללי על השרת
+// Middleware: Authenticate all requests to protected paths
+app.use('/courses', checkAuthKey);
+app.use('/students', checkAuthKey);
+
+// Route: General server info (public, no authentication required)
 app.get('/', (req, res) => {
     res.json({
         status: 'running',
@@ -19,12 +24,12 @@ app.get('/', (req, res) => {
     });
 });
 
-// חיבור Routers
+// Connect routers
 app.use('/courses', coursesRouter);
 app.use('/courses', enrollmentRouter);
 app.use('/students', studentsRouter);
 
-// 404 — תופס כל בקשה שלא נמצא לה Route מתאים
+// 404 handler — catches any request that doesn't match a defined route
 app.use((req, res) => {
     res.status(404).json({
         error: 'Not Found',
@@ -32,7 +37,7 @@ app.use((req, res) => {
     });
 });
 
-// Error handler — תופס שגיאות בלתי צפויות ומחזיר JSON במקום HTML
+// Global error handler — catches unexpected errors and returns JSON instead of HTML
 app.use((err, req, res, next) => {
     res.status(500).json({
         error: 'Internal Server Error',
@@ -40,7 +45,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// הרמת השרת
+// Start the server
 app.listen(port, () => {
     console.log(chalk.yellow(`Server is running at http://localhost:${port}/`));
     printCoursesToConsole();

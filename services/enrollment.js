@@ -1,7 +1,7 @@
 import studentsArr from '../data/students.js';
 import coursesArr from '../data/courses.js';
 
-// רושם סטודנט לקורס. בודק ששניהם קיימים ושהסטודנט לא רשום כבר.
+// Enrolls a student in a course. Validates that both exist and the student is not already enrolled.
 export function enrollStudent(studentId, courseId) {
     const student = studentsArr.find(s => s.id === studentId);
     if (!student) return { error: 'Student not found', studentId };
@@ -9,7 +9,7 @@ export function enrollStudent(studentId, courseId) {
     const course = coursesArr.find(c => c.id === courseId);
     if (!course) return { error: 'Course not found', courseId };
 
-    // חוק עסקי: מניעת רישום כפול
+    // Business rule: prevent duplicate enrollment
     if (student.courses.includes(courseId)) {
         return { error: 'Student is already enrolled in this course', studentId, courseId };
     }
@@ -18,7 +18,7 @@ export function enrollStudent(studentId, courseId) {
     return { studentId, courseId, courseName: course.name, studentName: student.fullName };
 }
 
-// מבטל רישום של סטודנט מקורס
+// Unenrolls a student from a course
 export function unenrollStudent(studentId, courseId) {
     const student = studentsArr.find(s => s.id === studentId);
     if (!student) return { error: 'Student not found', studentId };
@@ -35,7 +35,7 @@ export function unenrollStudent(studentId, courseId) {
     return { studentId, courseId, courseName: course.name };
 }
 
-// מחזיר את כל הקורסים שסטודנט רשום אליהם
+// Returns all courses a student is enrolled in
 export function getStudentCourses(studentId) {
     const student = studentsArr.find(s => s.id === studentId);
     if (!student) return { error: 'Student not found', studentId };
@@ -44,7 +44,7 @@ export function getStudentCourses(studentId) {
     return enrolledCourses;
 }
 
-// מחזיר את כל הסטודנטים הרשומים לקורס מסוים
+// Returns all students enrolled in a specific course
 export function getCourseStudents(courseId) {
     const course = coursesArr.find(c => c.id === courseId);
     if (!course) return { error: 'Course not found', courseId };
