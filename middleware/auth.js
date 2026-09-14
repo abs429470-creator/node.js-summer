@@ -1,5 +1,5 @@
-// The valid authentication key — in a real project, this would come from an environment variable
-const VALID_AUTH_KEY = 'my-secret-auth-key-2024';
+// The authentication key — now loaded from the environment (.env), no hardcoded secret in code
+const VALID_AUTH_KEY = process.env.AUTH_KEY;
 
 // Middleware for authentication — checks that the client sent a valid auth-key header
 function checkAuthKey(req, res, next) {
