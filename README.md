@@ -24,8 +24,13 @@ project/
 │   ├── students.js           # Business logic — CRUD operations for students
 │   └── enrollment.js         # Business logic — enroll/unenroll, queries
 ├── data/
-│   ├── courses.js            # In-memory course data store
-│   └── students.js           # In-memory student data store
+│   ├── fileStore.js          # Generic JSON read/write helpers (fs.promises)
+│   ├── courses.js            # Data layer — read/write courses
+│   ├── students.js           # Data layer — read/write students
+│   ├── courses.json          # Course data (persisted between restarts)
+│   └── students.json         # Student data (persisted between restarts)
+├── utils/
+│   └── response.js           # Shared error response helper (500)
 └── README.md
 ```
 
@@ -35,8 +40,8 @@ The project follows a layered architecture:
 
 - **Routes** — Define endpoints and HTTP methods. Thin layer that delegates to controllers.
 - **Controllers** — Extract request data, call service functions, return appropriate HTTP status codes.
-- **Services** — Pure business logic. No `req`/`res` objects — receive plain data and return plain results.
-- **Data** — In-memory arrays that serve as the database.
+- **Services** — Pure business logic. No `req`/`res` objects — receive plain data and return plain results. All functions are async and return a Promise.
+- **Data** — JSON files on disk (`courses.json`, `students.json`) accessed asynchronously via `fs.promises`. Every file operation returns a Promise, so changes persist between server restarts. A missing or malformed file results in a `500` response — it does not crash the server.
 
 ## Authentication
 

@@ -49,5 +49,5 @@ app.use((err, req, res, next) => {
 // Start the server
 app.listen(port, () => {
     console.log(chalk.yellow(`Server is running at http://localhost:${port}/`));
-    printCoursesToConsole();
+    printCoursesToConsole().catch(err => console.error('Failed to print courses:', err.message));
 });
